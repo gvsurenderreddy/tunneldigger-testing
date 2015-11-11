@@ -47,10 +47,6 @@ def setup():
         "curl",
         "git",
         ]
-    # fix debian jessie bug of lxc
-    pkg_to_install += [
-        "sysvinit-core"
-        ]
     # for testing the connection
     pkg_to_install += [
         "lighttpd"
