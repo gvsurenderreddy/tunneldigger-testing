@@ -91,6 +91,13 @@ def create_bridge(name):
     # FIXME: lxc_container: confile.c: network_netdev: 474 no network device defined for 'lxc.network.1.link' = 'br-46723922' option
     sleep(3)
 
+def check_internet(container, tries):
+    for i in range(0, tries):
+        ret = container.attach_wait(lxc.attach_run_command, "ping -c 1 -W 1 8.8.8.8".split())
+        if ret == 0:
+            return True
+    return False
+
 def check_container():
     base = lxc.Container("tunneldigger-base")
     if not base.defined:
@@ -115,9 +122,6 @@ def check_container():
     server = base.clone(server_name, None,lxc.LXC_CLONE_SNAPSHOT)
     client = base.clone(client_name, None,lxc.LXC_CLONE_SNAPSHOT)
 
-    configure_network(server, bridge_name, True)
-    configure_network(client, bridge_name, False)
-
     if not server:
         if client:
             client.destroy()
@@ -126,6 +130,13 @@ def check_container():
         if server:
             server.destroy()
         raise RuntimeError("could not create client container %s" % client_name)
+
+    configure_network(server, bridge_name, True)
+    configure_network(client, bridge_name, False)
+
+    for cont in [client, server]:
+        if not check_internet(cont, 5):
+            raise RuntimeError("Container doesn't have an internet connection")
 
     spid = run_server(server)
     cpid = run_client(client)
