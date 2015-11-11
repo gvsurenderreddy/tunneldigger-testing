@@ -10,8 +10,8 @@ GIT_URL = "https://github.com/wlanslovenija/tunneldigger"
 GIT_REV = "4e4f13cdc630c46909d47441093a5bdaffa0d67f"
 
 GIT_URL = "https://github.com/lynxis/tunneldigger"
-SERVER_REV = "b8b496b6b965769de898f21622f74ab3fc56ddc7"
-CLIENT_REV = "b8b496b6b965769de898f21622f74ab3fc56ddc7"
+SERVER_REV = "f86e63d1c69c18f201e18f8c5e3a8fa6eae7e0ed"
+CLIENT_REV = "f86e63d1c69c18f201e18f8c5e3a8fa6eae7e0ed"
 
 def setup():
     container = lxc.Container("tunneldigger-base")
