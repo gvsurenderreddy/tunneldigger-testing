@@ -86,8 +86,7 @@ def configure_network(container, bridge, is_server):
         container.set_config_item(item[0], item[1])
 
 def configure_mounts(container):
-    mnt = c.get_config_item('lxc.mount.entry')
-    mnt.append('/usr/src usr/src none bind,ro 0 0')
+    container.append_config_item('lxc.mount.entry', '/usr/src usr/src none bind,ro 0 0')
 
 def create_bridge(name):
     """ setup a linux bridge device """
