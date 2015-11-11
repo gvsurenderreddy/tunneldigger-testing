@@ -17,8 +17,8 @@ def setup():
     container = lxc.Container("tunneldigger-base")
 
     if not container.defined:
-        if not container.create("download", lxc.LXC_CREATE_QUIET, {"dist": "debian",
-                                                                   "release": "squeeze",
+        if not container.create("download", lxc.LXC_CREATE_QUIET, {"dist": "ubuntu",
+                                                                   "release": "trusty",
                                                                    "arch": "amd64"}):
             raise RuntimeError("failed to create container")
 
