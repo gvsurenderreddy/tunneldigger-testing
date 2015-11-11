@@ -194,6 +194,7 @@ def run_tests(server, client):
 
 def clean_up():
     """ clean the up all bridge and containers created by this scripts. It will also abort all running tests."""
+    # TODO: implement this
     pass
 
 def check_host():
