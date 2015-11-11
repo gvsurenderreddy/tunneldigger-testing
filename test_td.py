@@ -209,7 +209,7 @@ def check_host():
     if have_brctl:
         print("Everything is installed")
         return True
-    return False
+    raise RuntimeError("Missing dependencies. See stderr for more info")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Test Tunneldigger version against each other")
