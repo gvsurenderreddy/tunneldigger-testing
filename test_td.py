@@ -160,7 +160,7 @@ def run_server(server):
     sleep(5)
 
     server.attach_wait(lxc.attach_run_command, ["git", "clone", GIT_URL, '/srv/tunneldigger/'])
-    server.attach_wait(lxc.attach_run_command, ["git", "-C", "/srv/tunneldigger/", "checkout", SERVER_REV, '/srv/tunneldigger/'])
+    server.attach_wait(lxc.attach_run_command, ["git", "--git-dir", "/srv/tunneldigger/.git", "--work-tree", "/srv/tunneldigger/", "checkout", SERVER_REV, '/srv/tunneldigger/'])
     spid = server.attach(lxc.attach_run_command, ['/srv/tunneldigger/broker/contrib/testrun'])
     return spid
 
@@ -173,7 +173,7 @@ def run_client(client):
     sleep(5)
 
     client.attach_wait(lxc.attach_run_command, ["git", "clone", GIT_URL, '/srv/tunneldigger/'])
-    client.attach_wait(lxc.attach_run_command, ["git", "-C", "/srv/tunneldigger/", "checkout", CLIENT_REV, '/srv/tunneldigger/'])
+    client.attach_wait(lxc.attach_run_command, ["git", "--git-dir", "/srv/tunneldigger/.git", "--work-tree", "/srv/tunneldigger/", "checkout", CLIENT_REV, '/srv/tunneldigger/'])
     cpid = client.attach(lxc.attach_run_command, ['/srv/tunneldigger/client/contrib/testrun'])
     return cpid
 
