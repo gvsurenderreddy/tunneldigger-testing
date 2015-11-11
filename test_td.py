@@ -18,7 +18,7 @@ def setup():
 
     if not container.defined:
         if not container.create("download", lxc.LXC_CREATE_QUIET, {"dist": "debian",
-                                                                   "release": "jessie",
+                                                                   "release": "squeeze",
                                                                    "arch": "amd64"}):
             raise RuntimeError("failed to create container")
 
