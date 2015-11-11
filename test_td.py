@@ -101,6 +101,7 @@ def create_bridge(name):
     sleep(3)
 
 def check_internet(container, tries):
+    """ check the internet connectivity inside the container """
     for i in range(0, tries):
         ret = container.attach_wait(lxc.attach_run_command, "ping -c 1 -W 1 8.8.8.8".split())
         if ret == 0:
