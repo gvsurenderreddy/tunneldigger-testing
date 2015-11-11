@@ -46,6 +46,7 @@ def setup():
         "wget",
         "curl",
         "git",
+        "iputils-ping"
         ]
     # for testing the connection
     pkg_to_install += [
