@@ -83,6 +83,10 @@ def configure_network(container, bridge, is_server):
         print(item)
         container.set_config_item(item[0], item[1])
 
+def configure_mounts(container):
+    mnt = c.get_config_item('lxc.mount.entry')
+    mnt.append('/usr/src usr/src none bind,ro 0 0')
+
 def create_bridge(name):
     """ setup a linux bridge device """
     check_call(["brctl", "addbr", name], timeout=10)
@@ -133,6 +137,8 @@ def check_container():
 
     configure_network(server, bridge_name, True)
     configure_network(client, bridge_name, False)
+
+    configure_mounts(client)
 
     for cont in [client, server]:
         if not check_internet(cont, 5):
