@@ -41,6 +41,7 @@ def setup():
         "python-virtualenv",
         "build-essential",
         "libnl-dev",
+        "linux-libc-dev",
         ]
     pkg_to_install += [
         "wget",
