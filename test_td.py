@@ -87,7 +87,6 @@ def configure_network(container, bridge, is_server):
             )
 
     for item in config:
-        print(item)
         container.set_config_item(item[0], item[1])
 
 def configure_mounts(container):
