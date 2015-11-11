@@ -143,8 +143,11 @@ def check_container():
     configure_mounts(client)
 
     for cont in [client, server]:
-        if not check_internet(cont, 5):
-            raise RuntimeError("Container doesn't have an internet connection")
+        if not cont.start():
+          raise RuntimeError("Can not start container %s" % cont.name)
+        sleep(3)
+        if not check_internet(cont, 10):
+            raise RuntimeError("Container doesn't have an internet connection %s" % cont.name)
 
     spid = run_server(server)
     cpid = run_client(client)
@@ -157,10 +160,6 @@ def run_server(server):
     """ run_server(server)
     server is a container
     """
-    server.start()
-    # wait until it has an ip via dhcp
-    sleep(5)
-
     server.attach_wait(lxc.attach_run_command, ["git", "clone", GIT_URL, '/srv/tunneldigger/'])
     server.attach_wait(lxc.attach_run_command, ["git", "--git-dir", "/srv/tunneldigger/.git", "--work-tree", "/srv/tunneldigger/", "checkout", SERVER_REV, '/srv/tunneldigger/'])
     spid = server.attach(lxc.attach_run_command, ['/srv/tunneldigger/broker/contrib/testrun'])
@@ -170,10 +169,6 @@ def run_client(client):
     """ run_client(client)
     client is a container
     """
-    client.start()
-    # wait until it has an ip via dhcp
-    sleep(5)
-
     client.attach_wait(lxc.attach_run_command, ["git", "clone", GIT_URL, '/srv/tunneldigger/'])
     client.attach_wait(lxc.attach_run_command, ["git", "--git-dir", "/srv/tunneldigger/.git", "--work-tree", "/srv/tunneldigger/", "checkout", CLIENT_REV, '/srv/tunneldigger/'])
     cpid = client.attach(lxc.attach_run_command, ['/srv/tunneldigger/client/contrib/testrun'])
