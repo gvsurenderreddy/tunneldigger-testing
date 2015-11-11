@@ -100,6 +100,7 @@ def check_internet(container, tries):
         ret = container.attach_wait(lxc.attach_run_command, "ping -c 1 -W 1 8.8.8.8".split())
         if ret == 0:
             return True
+        sleep(1)
     return False
 
 def check_container():
