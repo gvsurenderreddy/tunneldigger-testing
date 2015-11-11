@@ -4,7 +4,8 @@ import lxc
 from random import randint
 from subprocess import check_call
 from time import sleep
-
+import argparse
+import sys
 
 GIT_URL = "https://github.com/wlanslovenija/tunneldigger"
 GIT_REV = "4e4f13cdc630c46909d47441093a5bdaffa0d67f"
@@ -185,4 +186,62 @@ def run_tests(server, client):
     if ret != 0:
         raise RuntimeError("failed to run the tests")
 
-check_container()
+def testing(client_rev, server_rev):
+    pass
+
+def clean_up():
+    """ clean the up all bridge and containers created by this scripts. It will also abort all running tests."""
+    pass
+
+def check_host():
+    """ check if the host has all known requirements to run this script """
+    have_brctl = False
+
+    try:
+        check_call(["brctl", "--version"], timeout=3)
+        have_brctl = True
+    except Exception:
+        pass
+
+    if have_brctl:
+        sys.stderr.write("No brctl installed\n")
+
+    if have_brctl:
+        print("Everything is installed")
+        return True
+    return False
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="Test Tunneldigger version against each other")
+    # operation on the hosts
+    parser.add_argument('--check-host', dest='check_host', action='store_true', default=False,
+            help="Check if the host has all requirements installed")
+    parser.add_argument('--setup', dest='setup', action='store_true', default=False,
+            help="Setup the basic template. Must run once before doing the tests.")
+    # testing arguments
+    parser.add_argument('-t', '--test', dest='test', action='store_true', default=False,
+            help="Do a test run. Server rev and Client rev required. See -s and -c.")
+    parser.add_argument('-s', '--server', dest='server', type=str,
+            help="The revision used by the server")
+    parser.add_argument('-c', '--client', dest='client', type=str,
+            help="The revision used by the client")
+    # clean up
+    parser.add_argument('--clean', action='store_true', default=False,
+            help="Clean up (old) containers and bridges. This will kill all running tests!")
+
+    args = parser.parse_args()
+    print(args)
+
+    if args.check_host:
+        check_host()
+
+    if args.setup:
+        setup_template()
+
+    if args.test:
+        if not args.server or not args.client:
+            raise RuntimeError("No client or server revision given. E.g. --test --server aba123 --client aba123.")
+        testing(args.client, args.server)
+
+    if args.clean:
+        clean_up()
