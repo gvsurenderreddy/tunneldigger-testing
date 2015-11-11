@@ -154,7 +154,7 @@ def run_server(server):
     sleep(5)
 
     server.attach_wait(lxc.attach_run_command, ["git", "clone", GIT_URL, '/srv/tunneldigger/'])
-    server.attach_wait(lxc.attach_run_command, ["git", "-C /srv/tunneldigger/", "checkout", SERVER_REV, '/srv/tunneldigger/'])
+    server.attach_wait(lxc.attach_run_command, ["git", "-C", "/srv/tunneldigger/", "checkout", SERVER_REV, '/srv/tunneldigger/'])
     spid = server.attach(lxc.attach_run_command, ['/srv/tunneldigger/broker/contrib/testrun'])
     return spid
 
