@@ -65,22 +65,23 @@ def configure_network(container, bridge, is_server):
     """ configure the container and connect them to the bridge 
     container is a lxc container
     hexi is the hex for the bridge """
-    config = {
-        'lxc.network.1.type': 'veth',
-        'lxc.network.1.link': bridge,
-        'lxc.network.1.flags': 'up',
-        }
+    config = [
+        ('lxc.network.1.type', 'veth'),
+        ('lxc.network.1.link', bridge),
+        ('lxc.network.1.flags', 'up'),
+        ]
     if is_server:
-        config.update({
-            'lxc.network.1.ipv4': '172.16.16.1/24',
-            })
+        config.append(
+            ('lxc.network.1.ipv4', '172.16.16.1/24'),
+            )
     else:
-        config.update({
-            'lxc.network.1.ipv4': '172.16.16.2/24',
-            })
+        config.append(
+            ('lxc.network.1.ipv4', '172.16.16.2/24'),
+            )
 
-    for key, value in config.items():
-        container.set_config_item(key, value)
+    for item in config:
+        print(item)
+        container.set_config_item(item[0], item[1])
 
 def create_bridge(name):
     """ setup a linux bridge device """
