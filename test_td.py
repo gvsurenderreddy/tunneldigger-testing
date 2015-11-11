@@ -39,7 +39,8 @@ def setup():
         "libevent-dev",
         "ebtables",
         "python-virtualenv",
-        "build-essential"
+        "build-essential",
+        "libnl-dev",
         ]
     pkg_to_install += [
         "wget",
