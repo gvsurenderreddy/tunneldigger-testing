@@ -11,9 +11,6 @@ GIT_URL = "https://github.com/wlanslovenija/tunneldigger"
 GIT_REV = "4e4f13cdc630c46909d47441093a5bdaffa0d67f"
 
 GIT_URL = "https://github.com/lynxis/tunneldigger"
-SERVER_REV = "f86e63d1c69c18f201e18f8c5e3a8fa6eae7e0ed"
-CLIENT_REV = "f86e63d1c69c18f201e18f8c5e3a8fa6eae7e0ed"
-
 
 def setup_template():
     """ all test container are cloned from this one
@@ -109,7 +106,15 @@ def check_internet(container, tries):
         sleep(1)
     return False
 
-def check_container():
+def testing(client_rev, server_rev):
+    """ this does the real test.
+    - cloning containers from tunneldigger-base
+    - setup network
+    - checkout git repos
+    - execute "compiler" steps
+    - start services
+    - do the real tests
+    """
     base = lxc.Container("tunneldigger-base")
     if not base.defined:
         raise RuntimeError("Setup first the base container")
@@ -154,28 +159,30 @@ def check_container():
         if not check_internet(cont, 10):
             raise RuntimeError("Container doesn't have an internet connection %s" % cont.name)
 
-    spid = run_server(server)
-    cpid = run_client(client)
+    spid = run_server(server, server_rev)
+    cpid = run_client(client, client_rev)
 
     sleep(10)
 
     run_tests(server, client)
 
-def run_server(server):
+def run_server(server, git_rev):
     """ run_server(server)
     server is a container
     """
     server.attach_wait(lxc.attach_run_command, ["git", "clone", GIT_URL, '/srv/tunneldigger/'])
-    server.attach_wait(lxc.attach_run_command, ["git", "--git-dir", "/srv/tunneldigger/.git", "--work-tree", "/srv/tunneldigger/", "checkout", SERVER_REV, '/srv/tunneldigger/'])
+    server.attach_wait(lxc.attach_run_command, ["git", "--git-dir", "/srv/tunneldigger/.git", "--work-tree",
+        "/srv/tunneldigger/", "checkout", git_rev, '/srv/tunneldigger/'])
     spid = server.attach(lxc.attach_run_command, ['/srv/tunneldigger/broker/contrib/testrun'])
     return spid
 
-def run_client(client):
+def run_client(client, git_rev):
     """ run_client(client)
     client is a container
     """
     client.attach_wait(lxc.attach_run_command, ["git", "clone", GIT_URL, '/srv/tunneldigger/'])
-    client.attach_wait(lxc.attach_run_command, ["git", "--git-dir", "/srv/tunneldigger/.git", "--work-tree", "/srv/tunneldigger/", "checkout", CLIENT_REV, '/srv/tunneldigger/'])
+    client.attach_wait(lxc.attach_run_command, ["git", "--git-dir", "/srv/tunneldigger/.git", "--work-tree",
+        "/srv/tunneldigger/", "checkout", git_rev, '/srv/tunneldigger/'])
     cpid = client.attach(lxc.attach_run_command, ['/srv/tunneldigger/client/contrib/testrun'])
     return cpid
 
@@ -184,9 +191,6 @@ def run_tests(server, client):
     ret = client.attach_wait(lxc.attach_run_command, ["wget", "-t", "2", "-T", "4", "http://192.168.254.1:8080/test-data", '-O', '/dev/null'])
     if ret != 0:
         raise RuntimeError("failed to run the tests")
-
-def testing(client_rev, server_rev):
-    pass
 
 def clean_up():
     """ clean the up all bridge and containers created by this scripts. It will also abort all running tests."""
