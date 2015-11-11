@@ -13,7 +13,11 @@ GIT_URL = "https://github.com/lynxis/tunneldigger"
 SERVER_REV = "f86e63d1c69c18f201e18f8c5e3a8fa6eae7e0ed"
 CLIENT_REV = "f86e63d1c69c18f201e18f8c5e3a8fa6eae7e0ed"
 
-def setup():
+
+def setup_template():
+    """ all test container are cloned from this one
+    it's important that this container is *NOT* running!
+    """
     container = lxc.Container("tunneldigger-base")
 
     if not container.defined:
