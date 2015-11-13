@@ -88,6 +88,14 @@ def configure_network(container, bridge, is_server):
         container.set_config_item(item[0], item[1])
 
 def configure_mounts(container):
+    # mount testing dir
+    local_path = os.path.dirname(os.path.realpath(__file__))
+
+    # TODO: this mount is very dirty and may be DANGEROUS!!! Unescaped.
+    # mount this directory to /testing
+    container.append_config_item('lxc.mount.entry', '%s testing none bind,ro,create=dir 0 0' % local_path)
+
+    # TODO: check if this is required because of libc-dev package
     container.append_config_item('lxc.mount.entry', '/usr/src usr/src none bind,ro 0 0')
 
 def create_bridge(name):
