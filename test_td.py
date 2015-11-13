@@ -244,6 +244,9 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    if not args.check_host and not args.setup and not args.test and not args.clean:
+      parser.print_help()
+
     if args.check_host:
         check_host()
 
