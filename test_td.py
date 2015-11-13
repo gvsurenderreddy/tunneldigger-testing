@@ -5,6 +5,7 @@ from random import randint
 from subprocess import check_call
 from time import sleep
 import argparse
+import os
 import sys
 
 GIT_URL = "https://github.com/wlanslovenija/tunneldigger"
