@@ -234,7 +234,6 @@ if __name__ == '__main__':
             help="Clean up (old) containers and bridges. This will kill all running tests!")
 
     args = parser.parse_args()
-    print(args)
 
     if args.check_host:
         check_host()
