@@ -207,7 +207,7 @@ def check_host():
     except Exception:
         pass
 
-    if have_brctl:
+    if not have_brctl:
         sys.stderr.write("No brctl installed\n")
 
     if have_brctl:
