@@ -48,5 +48,5 @@ sed -i "s/127.0.0.1/$IP/g" /srv/tunneldigger/broker/l2tp_broker.cfg
 sed -i "s/^interface=.*/interface=eth1/g" /srv/tunneldigger/broker/l2tp_broker.cfg
 
 HOOKPATH=/testing/hook_server/
-sed -i "s!^session.up=.*!session.up=$HOOKPATH/setup_interface.sh!g"
-sed -i "s!^session.down=.*!session.up=$HOOKPATH/teardown_interface.sh!g"
+sed -i "s!^session.up=.*!session.up=$HOOKPATH/setup_interface.sh!g" /srv/tunneldigger/broker/l2tp_broker.cfg
+sed -i "s!^session.down=.*!session.up=$HOOKPATH/teardown_interface.sh!g" /srv/tunneldigger/broker/l2tp_broker.cfg
