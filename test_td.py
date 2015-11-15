@@ -115,11 +115,14 @@ def check_internet(container, tries):
 def generate_test_file():
     """ generate a test file with sha256sum"""
     local_path = os.path.dirname(os.path.realpath(__file__))
-    test_8m = local_path + '/test_8m'
-    sum_file = local_path + '/sha256sum'
+    test_data = local_path + '/test-data'
+    test_8m = test_data + '/test_8m'
+    sum_file = test_data + '/sha256sum'
+    if not os.path.exists(test_data):
+        os.mkdir(test_data)
     if not os.path.exists(test_8m):
         check_call(['dd', 'if=/dev/urandom', 'of=%s' % test_8m, 'bs=1M', 'count=8'])
-        output = check_output(['sha256sum', test_8m], cwd=local_path)
+        output = check_output(['sha256sum', test_8m], cwd=test_data)
         f = open(sum_file, 'wb')
         f.write(output)
         f.close()
