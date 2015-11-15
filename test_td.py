@@ -130,7 +130,7 @@ def git_checkout():
     git_repo_path = local_path + '/git-repo'
     if not os.path.exists(git_repo_path):
         check_call(["git", "clone", "--bare", GIT_URL, git_repo_path])
-    check_call(["git", "fetch"], cwd='%s/git-repo' % git_repo_path)
+    check_call(["git", "fetch"], cwd='%s' % git_repo_path)
 
 def testing(client_rev, server_rev):
     """ this does the real test.
