@@ -179,9 +179,8 @@ def testing(client_rev, server_rev):
     configure_network(server, bridge_name, True)
     configure_network(client, bridge_name, False)
 
-    configure_mounts(client)
-
     for cont in [client, server]:
+        configure_mounts(cont)
         if not cont.start():
           raise RuntimeError("Can not start container %s" % cont.name)
         sleep(3)
