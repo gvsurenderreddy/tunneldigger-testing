@@ -1,0 +1,4 @@
+#!/bin/sh
+
+cd /srv/tunneldigger/client
+exec /srv/tunneldigger/client/l2tp_client -u foobar -i l2tp0 -t 2 -b $REMOTEIP:8942 -L 102400 -f

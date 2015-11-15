@@ -2,7 +2,7 @@
 
 import lxc
 from random import randint
-from subprocess import check_call
+from subprocess import check_call, check_output
 from time import sleep
 import argparse
 import os
@@ -115,6 +115,26 @@ def check_internet(container, tries):
         sleep(1)
     return False
 
+def generate_test_file():
+    """ generate a test file with sha256sum"""
+    local_path = os.path.dirname(os.path.realpath(__file__))
+    test_8m = local_path + '/test_8m'
+    sum_file = local_path + '/sha256sum'
+    if not os.path.exists(test_8m):
+        check_call(['dd', 'if=/dev/urandom', 'of=%s' % test_8m, 'bs=1M', 'count=8'])
+        output = check_output(['sha256sum', test_8m], cwd=local_path)
+        f = open(sum_file, 'w')
+        f.write(output)
+        f.close()
+
+def git_checkout():
+    # checkout the repo
+    local_path = os.path.dirname(os.path.realpath(__file__))
+    git_repo_path = local_path + '/git-repo'
+    if not os.path.exists(git_repo_path):
+        check_call(["git", "clone", "--bare", GIT_URL, git_repo_path])
+    check_call(["git", "fetch"], cwd='%s/git-repo' % git_repo_path)
+
 def testing(client_rev, server_rev):
     """ this does the real test.
     - cloning containers from tunneldigger-base
@@ -127,6 +147,9 @@ def testing(client_rev, server_rev):
     base = lxc.Container("tunneldigger-base")
     if not base.defined:
         raise RuntimeError("Setup first the base container")
+
+    git_checkout()
+    generate_test_file()
 
     hexi = get_random_context()
     print("generate a run for %s" % hexi) 
@@ -179,20 +202,21 @@ def run_server(server, git_rev):
     """ run_server(server)
     server is a container
     """
-    server.attach_wait(lxc.attach_run_command, ["git", "clone", GIT_URL, '/srv/tunneldigger/'])
-    server.attach_wait(lxc.attach_run_command, ["git", "--git-dir", "/srv/tunneldigger/.git", "--work-tree",
-        "/srv/tunneldigger/", "checkout", git_rev, '/srv/tunneldigger/'])
-    spid = server.attach(lxc.attach_run_command, ['/srv/tunneldigger/broker/contrib/testrun'])
+    ret = server.attach_wait(lxc.attach_run_command, ['/testing/prepare_server'])
+    if ret != 0:
+        raise RuntimeError("Failed to prepare the server")
+
+    spid = server.attach(lxc.attach_run_command, ['/testing/run_server'])
     return spid
 
 def run_client(client, git_rev):
     """ run_client(client)
     client is a container
     """
-    client.attach_wait(lxc.attach_run_command, ["git", "clone", GIT_URL, '/srv/tunneldigger/'])
-    client.attach_wait(lxc.attach_run_command, ["git", "--git-dir", "/srv/tunneldigger/.git", "--work-tree",
-        "/srv/tunneldigger/", "checkout", git_rev, '/srv/tunneldigger/'])
-    cpid = client.attach(lxc.attach_run_command, ['/srv/tunneldigger/client/contrib/testrun'])
+    ret = client.attach_wait(lxc.attach_run_command, ['/testing/prepare_client'])
+    if ret != 0:
+        raise RuntimeError("Failed to prepare the server")
+    cpid = client.attach(lxc.attach_run_command, ['/testing/run_client'])
     return cpid
 
 def run_tests(server, client):
