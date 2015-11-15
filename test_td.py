@@ -199,7 +199,7 @@ def run_server(server, git_rev):
     """ run_server(server)
     server is a container
     """
-    ret = server.attach_wait(lxc.attach_run_command, ['/testing/prepare_server'])
+    ret = server.attach_wait(lxc.attach_run_command, ['/testing/prepare_server', git_rev])
     if ret != 0:
         raise RuntimeError("Failed to prepare the server")
 
@@ -210,7 +210,7 @@ def run_client(client, git_rev):
     """ run_client(client)
     client is a container
     """
-    ret = client.attach_wait(lxc.attach_run_command, ['/testing/prepare_client'])
+    ret = client.attach_wait(lxc.attach_run_command, ['/testing/prepare_client', git_rev])
     if ret != 0:
         raise RuntimeError("Failed to prepare the server")
     cpid = client.attach(lxc.attach_run_command, ['/testing/run_client'])

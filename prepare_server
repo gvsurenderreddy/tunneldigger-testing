@@ -3,6 +3,8 @@
 # checkout the repo
 cd /srv
 git clone /testing/git-repo tunneldigger
+cd /srv/tunneldigger
+git checkout "$1"
 
 # setup bridge
 brctl addbr br0

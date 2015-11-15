@@ -10,6 +10,8 @@ REMOTEIP=$(ip -4 -o a s dev eth1  | awk '{ print $4 }' | awk -F/ '{print $1}' | 
 # checkout the repo
 cd /srv
 git clone /testing/git-repo tunneldigger
+cd /srv/tunneldigger
+git checkout "$1"
 
 cd /srv/tunneldigger/client
 make
