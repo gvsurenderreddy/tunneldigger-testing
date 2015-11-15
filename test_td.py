@@ -120,7 +120,7 @@ def generate_test_file():
     if not os.path.exists(test_8m):
         check_call(['dd', 'if=/dev/urandom', 'of=%s' % test_8m, 'bs=1M', 'count=8'])
         output = check_output(['sha256sum', test_8m], cwd=local_path)
-        f = open(sum_file, 'w')
+        f = open(sum_file, 'wb')
         f.write(output)
         f.close()
 
