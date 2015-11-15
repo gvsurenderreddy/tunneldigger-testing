@@ -9,9 +9,6 @@ import os
 import sys
 
 GIT_URL = "https://github.com/wlanslovenija/tunneldigger"
-GIT_REV = "4e4f13cdc630c46909d47441093a5bdaffa0d67f"
-
-GIT_URL = "https://github.com/lynxis/tunneldigger"
 
 def setup_template():
     """ all test container are cloned from this one
