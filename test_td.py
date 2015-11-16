@@ -140,8 +140,8 @@ def testing(client_rev, server_rev):
     hexi = get_random_context()
     print("generate a run for %s" % hexi)
     client, server = prepare_containers(hexi, client_rev, server_rev)
-    spid = run_server(server, server_rev)
-    cpid = run_client(client, client_rev)
+    spid = run_server(server)
+    cpid = run_client(client)
 
     # wait until client is connected to server
     # TODO: use check_internet for this
@@ -199,26 +199,27 @@ def prepare_containers(hexi, client_rev, server_rev):
         sleep(3)
         if not check_internet(cont, 20):
             raise RuntimeError("Container doesn't have an internet connection %s" % cont.name)
-    return client, server
 
-def run_server(server, git_rev):
-    """ run_server(server)
-    server is a container
-    """
     ret = server.attach_wait(lxc.attach_run_command, ['/testing/prepare_server', git_rev])
     if ret != 0:
         raise RuntimeError("Failed to prepare the server")
 
-    spid = server.attach(lxc.attach_run_command, ['/testing/run_server'])
-    return spid
-
-def run_client(client, git_rev):
-    """ run_client(client)
-    client is a container
-    """
     ret = client.attach_wait(lxc.attach_run_command, ['/testing/prepare_client', git_rev])
     if ret != 0:
         raise RuntimeError("Failed to prepare the server")
+    return client, server
+
+def run_server(server):
+    """ run_server(server)
+    server is a container
+    """
+    spid = server.attach(lxc.attach_run_command, ['/testing/run_server'])
+    return spid
+
+def run_client(client):
+    """ run_client(client)
+    client is a container
+    """
     cpid = client.attach(lxc.attach_run_command, ['/testing/run_client'])
     return cpid
 
