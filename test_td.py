@@ -146,8 +146,8 @@ def testing(client_rev, server_rev):
     cpid = run_client(client)
 
     # wait until client is connected to server
-    # TODO: use check_internet for this
-    sleep(10)
+    if not check_ping(client, '192.168.254.1', 20):
+        raise RuntimeError('Tunneldigger client can not connect to the server')
     run_tests(server, client)
 
 def prepare_containers(hexi, client_rev, server_rev):
