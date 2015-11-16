@@ -27,6 +27,8 @@ def teardown_module():
     for cont in [CLIENT, SERVER]:
         if cont and cont.running:
             cont.shutdown(5)
+        if cont:
+            cont.destroy()
 
 class TestTunneldigger(object):
     def test_ping_tunneldigger_server(self):
