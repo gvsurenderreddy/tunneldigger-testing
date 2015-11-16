@@ -19,6 +19,9 @@ def setup_module():
     CLIENT, SERVER = test_td.prepare_containers(CONTEXT, os.environ['CLIENT_REV'], os.environ['SERVER_REV'])
     SERVER_PID = test_td.run_server(SERVER)
     CLIENT_PID = test_td.run_client(CLIENT)
+    # explicit no Exception when ping fails
+    # it's better to poll the client for a ping rather doing a long sleep
+    test_td.check_ping(CLIENT, '192.168.254.1', 20)
 
 def teardown_module():
     for cont in [CLIENT, SERVER]:
