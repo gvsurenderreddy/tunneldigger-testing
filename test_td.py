@@ -137,6 +137,11 @@ def git_checkout():
     check_call(["git", "fetch"], cwd='%s' % git_repo_path)
 
 def testing(client_rev, server_rev):
+    hexi = get_random_context()
+    print("generate a run for %s" % hexi)
+    prepare_containers(hexi, client_rev, server_rev)
+
+def prepare_containers(hexi, client_rev, server_rev):
     """ this does the real test.
     - cloning containers from tunneldigger-base
     - setup network
@@ -152,8 +157,6 @@ def testing(client_rev, server_rev):
     git_checkout()
     generate_test_file()
 
-    hexi = get_random_context()
-    print("generate a run for %s" % hexi) 
     server_name = "%s_server" % hexi
     client_name = "%s_client" % hexi
     bridge_name = "br-%s" % hexi
