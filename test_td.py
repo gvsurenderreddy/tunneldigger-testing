@@ -188,7 +188,7 @@ def testing(client_rev, server_rev):
         if not cont.start():
           raise RuntimeError("Can not start container %s" % cont.name)
         sleep(3)
-        if not check_internet(cont, 10):
+        if not check_internet(cont, 20):
             raise RuntimeError("Container doesn't have an internet connection %s" % cont.name)
 
     spid = run_server(server, server_rev)
