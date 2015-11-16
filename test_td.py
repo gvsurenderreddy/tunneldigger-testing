@@ -200,11 +200,11 @@ def prepare_containers(hexi, client_rev, server_rev):
         if not check_internet(cont, 20):
             raise RuntimeError("Container doesn't have an internet connection %s" % cont.name)
 
-    ret = server.attach_wait(lxc.attach_run_command, ['/testing/prepare_server', git_rev])
+    ret = server.attach_wait(lxc.attach_run_command, ['/testing/prepare_server', server_rev])
     if ret != 0:
         raise RuntimeError("Failed to prepare the server")
 
-    ret = client.attach_wait(lxc.attach_run_command, ['/testing/prepare_client', git_rev])
+    ret = client.attach_wait(lxc.attach_run_command, ['/testing/prepare_client', client_rev])
     if ret != 0:
         raise RuntimeError("Failed to prepare the server")
     return client, server
