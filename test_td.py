@@ -139,7 +139,14 @@ def git_checkout():
 def testing(client_rev, server_rev):
     hexi = get_random_context()
     print("generate a run for %s" % hexi)
-    prepare_containers(hexi, client_rev, server_rev)
+    client, server = prepare_containers(hexi, client_rev, server_rev)
+    spid = run_server(server, server_rev)
+    cpid = run_client(client, client_rev)
+
+    # wait until client is connected to server
+    # TODO: use check_internet for this
+    sleep(10)
+    run_tests(server, client)
 
 def prepare_containers(hexi, client_rev, server_rev):
     """ this does the real test.
@@ -147,8 +154,7 @@ def prepare_containers(hexi, client_rev, server_rev):
     - setup network
     - checkout git repos
     - execute "compiler" steps
-    - start services
-    - do the real tests
+    - return clientcontainer, servercontainer
     """
     base = lxc.Container("tunneldigger-base")
     if not base.defined:
@@ -193,13 +199,7 @@ def prepare_containers(hexi, client_rev, server_rev):
         sleep(3)
         if not check_internet(cont, 20):
             raise RuntimeError("Container doesn't have an internet connection %s" % cont.name)
-
-    spid = run_server(server, server_rev)
-    cpid = run_client(client, client_rev)
-
-    sleep(10)
-
-    run_tests(server, client)
+    return client, server
 
 def run_server(server, git_rev):
     """ run_server(server)
