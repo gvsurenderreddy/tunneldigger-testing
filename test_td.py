@@ -69,21 +69,21 @@ def configure_network(container, bridge, is_server):
     container is a lxc container
     hexi is the hex for the bridge """
     config = [
-        ('lxc.network.1.type', 'veth'),
-        ('lxc.network.1.link', bridge),
-        ('lxc.network.1.flags', 'up'),
+        ('lxc.network.type', 'veth'),
+        ('lxc.network.link', bridge),
+        ('lxc.network.flags', 'up'),
         ]
     if is_server:
         config.append(
-            ('lxc.network.1.ipv4', '172.16.16.1/24'),
+            ('lxc.network.ipv4', '172.16.16.1/24'),
             )
     else:
         config.append(
-            ('lxc.network.1.ipv4', '172.16.16.2/24'),
+            ('lxc.network.ipv4', '172.16.16.2/24'),
             )
 
     for item in config:
-        container.set_config_item(item[0], item[1])
+        container.append_config_item(item[0], item[1])
 
 def configure_mounts(container):
     # mount testing dir
