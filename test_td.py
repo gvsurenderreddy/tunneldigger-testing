@@ -168,8 +168,8 @@ def testing(client_rev, server_rev):
 
     create_bridge(bridge_name)
 
-    server = base.clone(server_name, None, lxc.LXC_CLONE_SNAPSHOT)
-    client = base.clone(client_name, None, lxc.LXC_CLONE_SNAPSHOT)
+    server = base.clone(server_name, None, lxc.LXC_CLONE_SNAPSHOT, bdevtype='aufs')
+    client = base.clone(client_name, None, lxc.LXC_CLONE_SNAPSHOT, bdevtype='aufs')
 
     if not server:
         if client:
