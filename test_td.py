@@ -6,6 +6,7 @@ from subprocess import check_call, check_output
 from time import sleep
 import argparse
 import os
+import shlex
 import sys
 
 GIT_URL = "https://github.com/wlanslovenija/tunneldigger"
@@ -27,7 +28,7 @@ def setup_template():
             raise RuntimeError("failed to start container")
 
     container.attach_wait(lxc.attach_run_command, ["dhclient", "eth0"])
-    check_internet(container, 10)
+    check_ping(container, '8.8.8.8', 10)
     container.attach_wait(lxc.attach_run_command, ["apt-get", "update"])
     container.attach_wait(lxc.attach_run_command, ["apt-get", "dist-upgrade", "-y"])
 
@@ -104,10 +105,11 @@ def create_bridge(name):
     # FIXME: lxc_container: confile.c: network_netdev: 474 no network device defined for 'lxc.network.1.link' = 'br-46723922' option
     sleep(3)
 
-def check_internet(container, tries):
+def check_ping(container, server, tries):
     """ check the internet connectivity inside the container """
+    ping = 'ping -c 1 -W 1 %s' % server
     for i in range(0, tries):
-        ret = container.attach_wait(lxc.attach_run_command, "ping -c 1 -W 1 8.8.8.8".split())
+        ret = container.attach_wait(lxc.attach_run_command, shlex.split(ping))
         if ret == 0:
             return True
         sleep(1)
@@ -197,7 +199,7 @@ def prepare_containers(hexi, client_rev, server_rev):
         if not cont.start():
           raise RuntimeError("Can not start container %s" % cont.name)
         sleep(3)
-        if not check_internet(cont, 20):
+        if not check_ping(cont, '8.8.8.8', 20):
             raise RuntimeError("Container doesn't have an internet connection %s" % cont.name)
 
     ret = server.attach_wait(lxc.attach_run_command, ['/testing/prepare_server', server_rev])
