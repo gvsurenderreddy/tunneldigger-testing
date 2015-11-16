@@ -27,6 +27,7 @@ def setup_template():
             raise RuntimeError("failed to start container")
 
     container.attach_wait(lxc.attach_run_command, ["dhclient", "eth0"])
+    check_internet(container, 10)
     container.attach_wait(lxc.attach_run_command, ["apt-get", "update"])
     container.attach_wait(lxc.attach_run_command, ["apt-get", "dist-upgrade", "-y"])
 
