@@ -19,11 +19,10 @@ CLIENT_PID = None
 LOG = logging.getLogger("test_nose")
 
 def setup_module():
+    global CONTEXT, SERVER, CLIENT, SERVER_PID, CLIENT_PID
     CONTEXT = tunneldigger.get_random_context()
     LOG.info("using context %s", CONTEXT)
-    containers = tunneldigger.prepare_containers(CONTEXT, os.environ['CLIENT_REV'], os.environ['SERVER_REV'])
-    CLIENT = containers[0]
-    SERVER = containers[1]
+    CLIENT, SERVER = tunneldigger.prepare_containers(CONTEXT, os.environ['CLIENT_REV'], os.environ['SERVER_REV'])
     SERVER_PID = tunneldigger.run_server(SERVER)
     CLIENT_PID = tunneldigger.run_client(CLIENT)
     # explicit no Exception when ping fails
