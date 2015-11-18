@@ -5,7 +5,7 @@
 
 set -e
 
-if [ ! -d testing ] ; then
+if [ ! -d $WORKSPACE/testing ] ; then
   git clone https://github.com/lynxis/tunneldigger-testing testing
   cd testing
   
@@ -15,7 +15,7 @@ if [ ! -d testing ] ; then
   mv $WORKSPACE/tunneldigger/.git git-repo
   ln -s $WORKSPACE/testing/git-repo $WORKSPACE/tunneldigger/.git
   
-  ./test_td.py --setup
+  ./tunneldigger.py --setup
   cd ..
 fi
 
@@ -25,15 +25,22 @@ NEW_REV=$(git log -1 --format=format:%H)
 
 cd $WORKSPACE/testing/
 # test the version aginst itself
-./test_td.py -t -s $NEW_REV -c $NEW_REV
+export CLIENT_REV=$NEW_REV
+export SERVER_REV=$NEW_REV
+nosetests3
 
 OLD_REV="c638231efca6b3a6e1c675ac0834a3e851ad1bdc 7cbe5d60c1b72415e15e573e0a9189f47a3f2094"
 # do client NEW_REV against old revs
 for rev in $OLD_REV ; do
-  ./test_td.py -t -s $rev -c $NEW_REV
+  export CLIENT_REV=$NEW_REV
+  export SERVER_REV=$rev
+  nosetests3
 done
 
 # do server NEW_REV against old revs
 for rev in $OLD_REV ; do
-  ./test_td.py -t -s $NEW_REV -c $rev
+  export CLIENT_REV=$rev
+  export SERVER_REV=$NEW_REV
+  nosetests3
 done
+
