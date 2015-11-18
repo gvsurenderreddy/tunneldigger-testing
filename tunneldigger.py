@@ -64,14 +64,14 @@ def setup_template():
 
 def get_random_context():
     """ return a random hex similiar to mktemp, but do not check is already used """
-    hexi = randint(0, 2**32)
-    hexi = hex(hexi)[2:]
-    return hexi
+    context = randint(0, 2**32)
+    context = hex(context)[2:]
+    return context
 
 def configure_network(container, bridge, is_server):
     """ configure the container and connect them to the bridge 
     container is a lxc container
-    hexi is the hex for the bridge """
+    context is the hex for the bridge """
     config = [
         ('lxc.network.type', 'veth'),
         ('lxc.network.link', bridge),
@@ -143,9 +143,9 @@ def git_checkout():
     check_call(["git", "fetch"], cwd='%s' % git_repo_path)
 
 def testing(client_rev, server_rev):
-    hexi = get_random_context()
-    print("generate a run for %s" % hexi)
-    client, server = prepare_containers(hexi, client_rev, server_rev)
+    context = get_random_context()
+    print("generate a run for %s" % context)
+    client, server = prepare_containers(context, client_rev, server_rev)
     spid = run_server(server)
     cpid = run_client(client)
 
@@ -154,7 +154,7 @@ def testing(client_rev, server_rev):
         raise RuntimeError('Tunneldigger client can not connect to the server')
     run_tests(server, client)
 
-def prepare_containers(hexi, client_rev, server_rev):
+def prepare_containers(context, client_rev, server_rev):
     """ this does the real test.
     - cloning containers from tunneldigger-base
     - setup network
@@ -169,9 +169,9 @@ def prepare_containers(hexi, client_rev, server_rev):
     git_checkout()
     generate_test_file()
 
-    server_name = "%s_server" % hexi
-    client_name = "%s_client" % hexi
-    bridge_name = "br-%s" % hexi
+    server_name = "%s_server" % context
+    client_name = "%s_client" % context
+    bridge_name = "br-%s" % context
     server = lxc.Container(server_name)
     client = lxc.Container(client_name)
 
@@ -183,7 +183,7 @@ def prepare_containers(hexi, client_rev, server_rev):
 
     create_bridge(bridge_name)
 
-    LOG.info("ctx %s cloning containers", hexi)
+    LOG.info("ctx %s cloning containers", context)
     server = base.clone(server_name, None, lxc.LXC_CLONE_SNAPSHOT, bdevtype='aufs')
     client = base.clone(client_name, None, lxc.LXC_CLONE_SNAPSHOT, bdevtype='aufs')
 
@@ -207,17 +207,17 @@ def prepare_containers(hexi, client_rev, server_rev):
         if not check_ping(cont, '8.8.8.8', 20):
             raise RuntimeError("Container doesn't have an internet connection %s" % cont.name)
 
-    LOG.info("ctx %s prepare server", hexi)
+    LOG.info("ctx %s prepare server", context)
     ret = server.attach_wait(lxc.attach_run_command, ['/testing/prepare_server', server_rev])
     if ret != 0:
         raise RuntimeError("Failed to prepare the server")
-    LOG.info("ctx %s finished prepare server", hexi)
+    LOG.info("ctx %s finished prepare server", context)
 
-    LOG.info("ctx %s prepare client", hexi)
+    LOG.info("ctx %s prepare client", context)
     ret = client.attach_wait(lxc.attach_run_command, ['/testing/prepare_client', client_rev])
     if ret != 0:
         raise RuntimeError("Failed to prepare the server")
-    LOG.info("ctx %s finished prepare client", hexi)
+    LOG.info("ctx %s finished prepare client", context)
     return client, server
 
 def run_server(server):
