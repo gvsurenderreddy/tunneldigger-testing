@@ -41,7 +41,7 @@ class TestTunneldigger(object):
         """ even we check earlier if the ping is working, we want to fail the check here.
         If we fail in setup_module, nose will return UNKNOWN state, because the setup fails and
         not a "test" """
-        if tunneldigger.check_ping(CLIENT, '192.168.254.1', 3):
+        if not tunneldigger.check_ping(CLIENT, '192.168.254.1', 3):
             raise RuntimeError("fail to ping server")
 
     def test_wget_tunneldigger_server(self):
