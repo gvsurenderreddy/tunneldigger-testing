@@ -2,7 +2,7 @@
 
 import lxc
 import os
-import test_td
+import tunneldigger
 
 # random hash
 CONTEXT = None
@@ -16,13 +16,13 @@ SERVER_PID = None
 CLIENT_PID = None
 
 def setup_module():
-    CONTEXT = test_td.get_random_context()
-    CLIENT, SERVER = test_td.prepare_containers(CONTEXT, os.environ['CLIENT_REV'], os.environ['SERVER_REV'])
-    SERVER_PID = test_td.run_server(SERVER)
-    CLIENT_PID = test_td.run_client(CLIENT)
+    CONTEXT = tunneldigger.get_random_context()
+    CLIENT, SERVER = tunneldigger.prepare_containers(CONTEXT, os.environ['CLIENT_REV'], os.environ['SERVER_REV'])
+    SERVER_PID = tunneldigger.run_server(SERVER)
+    CLIENT_PID = tunneldigger.run_client(CLIENT)
     # explicit no Exception when ping fails
     # it's better to poll the client for a ping rather doing a long sleep
-    test_td.check_ping(CLIENT, '192.168.254.1', 20)
+    tunneldigger.check_ping(CLIENT, '192.168.254.1', 20)
 
 def teardown_module():
     for cont in [CLIENT, SERVER]:
@@ -36,7 +36,7 @@ class TestTunneldigger(object):
         """ even we check earlier if the ping is working, we want to fail the check here.
         If we fail in setup_module, nose will return UNKNOWN state, because the setup fails and
         not a "test" """
-        if test_td.check_ping(CLIENT, '192.168.254.1', 3):
+        if tunneldigger.check_ping(CLIENT, '192.168.254.1', 3):
             raise RuntimeError("fail to ping server")
 
     def test_wget_tunneldigger_server(self):
