@@ -5,11 +5,14 @@ from random import randint
 from subprocess import check_call, check_output
 from time import sleep
 import argparse
+import logging
 import os
 import shlex
 import sys
 
 GIT_URL = "https://github.com/wlanslovenija/tunneldigger"
+
+LOG = logging.getLogger("test.tunneldigger")
 
 def setup_template():
     """ all test container are cloned from this one
@@ -99,6 +102,7 @@ def configure_mounts(container):
 
 def create_bridge(name):
     """ setup a linux bridge device """
+    LOG.info("Creating bridg %s", name)
     check_call(["brctl", "addbr", name], timeout=10)
     check_call(["ip", "link", "set", name, "up"], timeout=10)
 
@@ -179,6 +183,7 @@ def prepare_containers(hexi, client_rev, server_rev):
 
     create_bridge(bridge_name)
 
+    LOG.info("ctx %s cloning containers", hexi)
     server = base.clone(server_name, None, lxc.LXC_CLONE_SNAPSHOT, bdevtype='aufs')
     client = base.clone(client_name, None, lxc.LXC_CLONE_SNAPSHOT, bdevtype='aufs')
 
@@ -202,13 +207,17 @@ def prepare_containers(hexi, client_rev, server_rev):
         if not check_ping(cont, '8.8.8.8', 20):
             raise RuntimeError("Container doesn't have an internet connection %s" % cont.name)
 
+    LOG.info("ctx %s prepare server", hexi)
     ret = server.attach_wait(lxc.attach_run_command, ['/testing/prepare_server', server_rev])
     if ret != 0:
         raise RuntimeError("Failed to prepare the server")
+    LOG.info("ctx %s finished prepare server", hexi)
 
+    LOG.info("ctx %s prepare client", hexi)
     ret = client.attach_wait(lxc.attach_run_command, ['/testing/prepare_client', client_rev])
     if ret != 0:
         raise RuntimeError("Failed to prepare the server")
+    LOG.info("ctx %s finished prepare client", hexi)
     return client, server
 
 def run_server(server):

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import logging
 import lxc
 import os
 import tunneldigger
@@ -15,8 +16,11 @@ CLIENT = None
 SERVER_PID = None
 CLIENT_PID = None
 
+LOG = logging.getLogger("test_nose")
+
 def setup_module():
     CONTEXT = tunneldigger.get_random_context()
+    LOG.info("using context %s", CONTEXT)
     containers = tunneldigger.prepare_containers(CONTEXT, os.environ['CLIENT_REV'], os.environ['SERVER_REV'])
     CLIENT = containers[0]
     SERVER = containers[1]
