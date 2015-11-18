@@ -17,7 +17,9 @@ CLIENT_PID = None
 
 def setup_module():
     CONTEXT = tunneldigger.get_random_context()
-    CLIENT, SERVER = tunneldigger.prepare_containers(CONTEXT, os.environ['CLIENT_REV'], os.environ['SERVER_REV'])
+    containers = tunneldigger.prepare_containers(CONTEXT, os.environ['CLIENT_REV'], os.environ['SERVER_REV'])
+    CLIENT = containers[0]
+    SERVER = containers[1]
     SERVER_PID = tunneldigger.run_server(SERVER)
     CLIENT_PID = tunneldigger.run_client(CLIENT)
     # explicit no Exception when ping fails
