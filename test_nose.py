@@ -30,11 +30,7 @@ def setup_module():
     tunneldigger.check_ping(CLIENT, '192.168.254.1', 20)
 
 def teardown_module():
-    for cont in [CLIENT, SERVER]:
-        if cont and cont.running:
-            cont.shutdown(5)
-        if cont:
-            cont.destroy()
+    tunneldigger.clean_up(CONTEXT, CLIENT, SERVER)
 
 class TestTunneldigger(object):
     def test_ping_tunneldigger_server(self):

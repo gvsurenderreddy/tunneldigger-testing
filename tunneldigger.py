@@ -240,10 +240,23 @@ def run_tests(server, client):
     if ret != 0:
         raise RuntimeError("failed to run the tests")
 
-def clean_up():
+def clean_up(context, client, server):
     """ clean the up all bridge and containers created by this scripts. It will also abort all running tests."""
-    # TODO: implement this
-    pass
+    LOG.info("ctx %s clean up", context)
+    # stop containers
+    for cont in [client, server]:
+        if cont.running:
+            LOG.debug("ctx %s hardstop container %s", context, cont.name)
+            cont.shutdown(0)
+        LOG.debug("ctx %s destroy container %s", context, cont.name)
+        cont.destroy()
+
+    # remove bridge
+    bridge_name = 'br-%s' % context
+    if os.path.exists('/sys/devices/virtual/net/%s' % bridge_name):
+        LOG.info("ctx %s destroy bridge %s", context, bridge_name)
+        check_call(["ip", "link", "set", bridge_name, "down"], timeout=10)
+        check_call(["brctl", "delbr", bridge_name], timeout=10)
 
 def check_host():
     """ check if the host has all known requirements to run this script """
