@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import lxc
 import os
 import test_td
 
@@ -32,12 +33,16 @@ def teardown_module():
 
 class TestTunneldigger(object):
     def test_ping_tunneldigger_server(self):
-        # ping 192.168.254.1
-        pass
+        """ even we check earlier if the ping is working, we want to fail the check here.
+        If we fail in setup_module, nose will return UNKNOWN state, because the setup fails and
+        not a "test" """
+        if test_td.check_ping(CLIENT, '192.168.254.1', 3):
+            raise RuntimeError("fail to ping server")
 
     def test_wget_tunneldigger_server(self):
-        # wget http://192.168.254.1
-        pass
+        ret = CLIENT.attach_wait(lxc.attach_run_command, ["wget", "-t", "2", "-T", "4", "http://192.168.254.1:8080/test_8m", '-O', '/dev/null'])
+        if ret != 0:
+            raise RuntimeError("failed to run the tests")
 
     def test_ensure_tunnel_up_for_5m(self):
         # get id of l2tp0 iface
