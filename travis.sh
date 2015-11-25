@@ -3,6 +3,6 @@
 #
 # travis script
 
+cd ..
 export WORKSPACE=$PWD
-
 exec $(dirname $0)/jenkins.sh
